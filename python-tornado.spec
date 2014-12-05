@@ -1,4 +1,4 @@
-%if 0%{?fedora} > 12 || 0%{?rhel} > 6
+%if 0%{?fedora} > 12
 %global with_python3 1
 %else
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
@@ -8,19 +8,22 @@
 
 Name:           python-%{pkgname}
 Version:        2.2.1
-Release:        1%{?dist}
+Release:        7%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            http://www.tornadoweb.org
 Source0:        http://github.com/downloads/facebook/%{pkgname}/%{pkgname}-%{version}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+# Fix for  CVE-2013-2098 CVE-2013-2099
+# https://bugzilla.redhat.com/show_bug.cgi?id=966270
+Patch0:         python-tornado-removed-custom-match_hostname.patch
 BuildArch:      noarch
 
 BuildRequires:  python-devel
+BuildRequires:  python-backports-ssl_match_hostname
+Requires:       python-backports-ssl_match_hostname
 Requires:       python-pycurl
-Requires:       python-simplejson
 %if 0%{?with_python3}
 BuildRequires:  python-tools
 BuildRequires:  python3-setuptools
@@ -72,6 +75,7 @@ server and and tools. This package contains some example applications.
 
 %prep 
 %setup -q -n %{pkgname}-%{version}
+%patch0 -p1
 
 # remove shebang from files
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
@@ -94,8 +98,6 @@ python setup.py build
 
 
 %install
-rm -rf %{buildroot}
-
 %if 0%{?with_python3}
 pushd %{py3dir}
     PATH=$PATH:%{buildroot}%{python3_sitelib}/%{pkgname}
@@ -106,9 +108,6 @@ popd
 PATH=$PATH:%{buildroot}%{python_sitelib}/%{pkgname}
 python setup.py install --root=%{buildroot}
 
-
-%clean
-rm -rf %{buildroot}
 
 %check
 %if "%{dist}" != ".el6"
@@ -121,31 +120,47 @@ rm -rf %{buildroot}
 %endif
 
 %files
-%defattr(-,root,root,-)
 %doc README PKG-INFO
 
 %{python_sitelib}/%{pkgname}/
 %{python_sitelib}/%{pkgname}-%{version}-*.egg-info
 
 %files doc
-%defattr(-,root,root,-)
 %doc demos
 
 %if 0%{?with_python3}
 %files -n python3-tornado
-%defattr(-,root,root,-)
 %doc README PKG-INFO
 
 %{python3_sitelib}/%{pkgname}/
 %{python3_sitelib}/%{pkgname}-%{version}-*.egg-info
 
 %files -n python3-tornado-doc
-%defattr(-,root,root,-)
 %doc demos
 %endif
 
 
 %changelog
+* Fri Dec 5 2014 Orion Poplawski <orion@cora.nwra.com> - 2.2.1-7
+- Add patch to fix CVE-2013-2098 CVE-2013-2099 (bug #96627)
+- Drop requires python-simplejson, not needed for modern python
+
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Fri Jun 14 2013 Thomas Spura <tomspur@fedoraproject.org> - 2.2.1-5
+- remove rhel conditional for with_python3:
+  https://fedorahosted.org/fpc/ticket/200
+
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Sat Aug 04 2012 David Malcolm <dmalcolm@redhat.com> - 2.2.1-3
+- rebuild for https://fedoraproject.org/wiki/Features/Python_3.3
+
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Sun May 20 2012 Thomas Spura <tomspur@fedoraproject.org> - 2.2.1-1
 - update to upstream release 2.2.1 (fixes CVE-2012-2374)
 - fix typo for epel6 macro bug #822972 (Florian La Roche)
