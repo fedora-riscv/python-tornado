@@ -7,8 +7,8 @@
 %global pkgname tornado
 
 Name:           python-%{pkgname}
-Version:        3.2.1
-Release:        3%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -156,6 +156,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue May 19 2015 Thomas Spura <tomspur@fedoraproject.org> - 3.2.2-1
+- Update to 3.2.2 to fix breack attack cve (#1222816,#1222819)
+
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.2.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
