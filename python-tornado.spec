@@ -7,8 +7,8 @@
 %global pkgname tornado
 
 Name:           python-%{pkgname}
-Version:        3.2.1
-Release:        4%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -149,6 +149,9 @@ python setup.py install --root=%{buildroot}
 
 
 %changelog
+* Tue May 19 2015 Thomas Spura <tomspur@fedoraproject.org> - 3.2.2-1
+- Update to 3.2.2 to fix breack attack cve (#1222816,#1222819)
+
 * Fri Dec 5 2014 Orion Poplawski <orion@cora.nwra.com> - 3.2.1-4
 - Drop requires python-simplejson
 
