@@ -8,7 +8,7 @@
 
 Name:           python-%{pkgname}
 Version:        3.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 Group:          Development/Libraries
@@ -16,9 +16,11 @@ License:        ASL 2.0
 URL:            http://www.tornadoweb.org
 Source0:        https://pypi.python.org/packages/source/t/tornado/tornado-%{version}.tar.gz
 
-BuildRequires:  python-devel
+BuildRequires:  python2-devel
+%if 0%{?fedora} < 22
 BuildRequires:  python-backports-ssl_match_hostname
 Requires:       python-backports-ssl_match_hostname
+%endif
 Requires:       python-pycurl
 %if 0%{?with_python3}
 BuildRequires:  python-tools
@@ -149,6 +151,9 @@ python setup.py install --root=%{buildroot}
 
 
 %changelog
+* Fri Jul 10 2015 Orion Poplawski <orion@cora.nwra.com> - 3.2.2-2
+- Do not require python-backports-ssl_match_hostname for F22+ (bug #1231368)
+
 * Tue May 19 2015 Thomas Spura <tomspur@fedoraproject.org> - 3.2.2-1
 - Update to 3.2.2 to fix breack attack cve (#1222816,#1222819)
 
