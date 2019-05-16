@@ -9,7 +9,7 @@
 
 Name:           python-%{srcname}
 Version:        5.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -20,6 +20,9 @@ Source0:        %{pypi_source}
 # Tornado has them, mostly in docstrings and the tests treat them as errors
 # Fixed upstream: https://github.com/tornadoweb/tornado/commit/6dceb64ed27c1d48af22142f2ebae946f0e85e95
 Patch0:         fix-syntax-warnings.patch
+# Do not turn DeprecationWarning in tornado module into Exception
+# fixes FTBFS with Python 3.8
+Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
 
 BuildRequires:  gcc
 
@@ -122,6 +125,10 @@ export ASYNC_TEST_TIMEOUT=10
 
 
 %changelog
+* Thu May 16 2019 Lumír Balhar <lbalhar@redhat.com> - 5.1.1-2
+- New patch to not turn DeprecationWarning in tornado module into Exception
+- Fixes FTBFS with Python 3.8
+
 * Wed Mar 27 2019 Miro Hrončok <mhroncok@redhat.com> - 5.1.1-1
 - Update to 5.1.1
 - Fix SyntaxWarnings (turned into SyntaxErrors) on Python 3.8
