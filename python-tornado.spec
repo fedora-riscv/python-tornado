@@ -1,37 +1,20 @@
-# python2 is not available on RHEL > 7
-%if 0%{?rhel} > 7
-%bcond_with python2
-%else
-%bcond_without python2
-%endif
-
 %global srcname tornado
 
 Name:           python-%{srcname}
-Version:        5.1.1
-Release:        2%{?dist}
+Version:        6.0.2
+Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
 URL:            http://www.tornadoweb.org
 Source0:        %{pypi_source}
 
-# Python 3.8 introduces SyntaxWarnings on invalid escape sequences
-# Tornado has them, mostly in docstrings and the tests treat them as errors
-# Fixed upstream: https://github.com/tornadoweb/tornado/commit/6dceb64ed27c1d48af22142f2ebae946f0e85e95
-Patch0:         fix-syntax-warnings.patch
 # Do not turn DeprecationWarning in tornado module into Exception
 # fixes FTBFS with Python 3.8
 Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
 
 BuildRequires:  gcc
 
-%if %{with python2}
-BuildRequires:  python2-devel
-BuildRequires:  python2-backports_abc
-BuildRequires:  python2-singledispatch
-BuildRequires:  python2-futures
-%endif # with python2
 BuildRequires:  python%{python3_pkgversion}-setuptools
 BuildRequires:  python%{python3_pkgversion}-devel
 
@@ -44,33 +27,6 @@ The framework is distinct from most mainstream web server frameworks
 reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
-
-%if %{with python2}
-%package -n python2-%{srcname}
-Summary:        Scalable, non-blocking web server and tools
-%{?python_provide:%python_provide python2-%{srcname}}
-
-Requires:       python2-pycurl
-
-%description -n python2-%{srcname}
-Tornado is an open source version of the scalable, non-blocking web
-server and tools.
-
-The framework is distinct from most mainstream web server frameworks
-(and certainly most Python frameworks) because it is non-blocking and
-reasonably fast. Because it is non-blocking and uses epoll, it can
-handle thousands of simultaneous standing connections, which means it is
-ideal for real-time web services.
-%endif  # with python2
-
-%package doc
-Summary:        Examples for python-tornado
-Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
-Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
-
-%description doc
-Tornado is an open source version of the scalable, non-blocking web
-server and and tools. This package contains some example applications.
 
 %package -n python%{python3_pkgversion}-%{srcname}
 Summary:        Scalable, non-blocking web server and tools
@@ -87,6 +43,15 @@ reasonably fast. Because it is non-blocking and uses epoll, it can
 handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 
+%package doc
+Summary:        Examples for python-tornado
+Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
+Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
+
+%description doc
+Tornado is an open source version of the scalable, non-blocking web
+server and and tools. This package contains some example applications.
+
 %prep 
 %autosetup -p1 -n %{srcname}-%{version}
 # remove shebang from files
@@ -94,28 +59,13 @@ ideal for real-time web services.
 
 %build
 %py3_build
-%{?with_python2:%py2_build}
-
 
 %install
 %py3_install
-%{?with_python2:%py2_install}
 
 %check
 export ASYNC_TEST_TIMEOUT=10
 %{__python3} -m tornado.test.runtests --verbose
-%{?with_python2:%{__python2} -m tornado.test.runtests --verbose}
-
-%if %{with python2}
-%files -n python2-%{srcname}
-%license LICENSE
-%doc README.rst
-%{python2_sitearch}/%{srcname}/
-%{python2_sitearch}/%{srcname}-%{version}-*.egg-info
-%endif # with python2
-
-%files doc
-%doc demos
 
 %files -n python%{python3_pkgversion}-%{srcname}
 %license LICENSE
@@ -123,8 +73,13 @@ export ASYNC_TEST_TIMEOUT=10
 %{python3_sitearch}/%{srcname}/
 %{python3_sitearch}/%{srcname}-%{version}-*.egg-info
 
+%files doc
+%doc demos
 
 %changelog
+* Mon Jun 03 2019 Miro Hrončok <mhroncok@redhat.com> - 6.0.2-1
+- Update to 6.0.2 (#1600318)
+
 * Thu May 16 2019 Lumír Balhar <lbalhar@redhat.com> - 5.1.1-2
 - New patch to not turn DeprecationWarning in tornado module into Exception
 - Fixes FTBFS with Python 3.8
