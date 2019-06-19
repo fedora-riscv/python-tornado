@@ -1,0 +1,45 @@
+From 0684b61c1d4feaaf5ac3c2d50375cf504214a48d Mon Sep 17 00:00:00 2001
+From: Petr Viktorin <encukou@gmail.com>
+Date: Wed, 19 Jun 2019 18:09:17 +0200
+Subject: [PATCH] gen.with_timeout: Don't log CancelledError after timeout
+
+See also: commit a237a995a1d54ad6e07c1ecdf5103ff8f45073b5
+---
+ tornado/gen.py | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tornado/gen.py b/tornado/gen.py
+index 51f2a4f03..33cc887e5 100644
+--- a/tornado/gen.py
++++ b/tornado/gen.py
+@@ -557,8 +557,9 @@ def with_timeout(
+     an absolute time relative to `.IOLoop.time`)
+ 
+     If the wrapped `.Future` fails after it has timed out, the exception
+-    will be logged unless it is of a type contained in ``quiet_exceptions``
+-    (which may be an exception type or a sequence of types).
++    will be logged unless it is either of a type contained in
++    ``quiet_exceptions`` (which may be an exception type or a sequence of
++    types), or a `CancelledError`.
+ 
+     The wrapped `.Future` is not canceled when the timeout expires,
+     permitting it to be reused. `asyncio.wait_for` is similar to this
+@@ -573,6 +574,9 @@ def with_timeout(
+     .. versionchanged:: 4.4
+        Added support for yieldable objects other than `.Future`.
+ 
++    .. versionchanged:: 6.1
++       Do not log CancelledError after timeout.
++
+     """
+     # It's tempting to optimize this by cancelling the input future on timeout
+     # instead of creating a new one, but A) we can't know if we are the only
+@@ -587,6 +591,8 @@ def with_timeout(
+     def error_callback(future: Future) -> None:
+         try:
+             future.result()
++        except asyncio.CancelledError:
++            pass
+         except Exception as e:
+             if not isinstance(e, quiet_exceptions):
+                 app_log.error(
