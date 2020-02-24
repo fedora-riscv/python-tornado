@@ -1,8 +1,8 @@
 %global srcname tornado
 
 Name:           python-%{srcname}
-Version:        6.0.2
-Release:        5%{?dist}
+Version:        6.0.3
+Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -12,7 +12,6 @@ Source0:        %{pypi_source}
 # Do not turn DeprecationWarning in tornado module into Exception
 # fixes FTBFS with Python 3.8
 Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
-Patch2:         https://github.com/tornadoweb/tornado/pull/2681.patch
 
 BuildRequires:  gcc
 
@@ -78,6 +77,9 @@ export ASYNC_TEST_TIMEOUT=10
 %doc demos
 
 %changelog
+* Mon Feb 24 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 6.0.3-1
+- Update to 6.0.3
+
 * Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
