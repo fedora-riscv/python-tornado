@@ -2,7 +2,7 @@
 
 Name:           python-%{srcname}
 Version:        6.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -77,6 +77,9 @@ export ASYNC_TEST_TIMEOUT=10
 %doc demos
 
 %changelog
+* Sat May 23 2020 Miro Hrončok <mhroncok@redhat.com> - 6.0.3-2
+- Rebuilt for Python 3.9
+
 * Mon Feb 24 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 6.0.3-1
 - Update to 6.0.3
 
