@@ -11,7 +11,7 @@ Source0:        %{pypi_source}
 
 # Do not turn DeprecationWarning in tornado module into Exception
 # fixes FTBFS with Python 3.8
-#Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
+Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
 
 BuildRequires:  gcc
 
