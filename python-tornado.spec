@@ -1,13 +1,13 @@
 %global srcname tornado
 
 Name:           python-%{srcname}
-Version:        6.0.4
+Version:        6.1.0
 Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
 URL:            http://www.tornadoweb.org
-Source0:        %{pypi_source}
+Source0:        https://github.com/tornadoweb/tornado/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
 # Do not turn DeprecationWarning in tornado module into Exception
 # fixes FTBFS with Python 3.8
@@ -44,7 +44,7 @@ handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.
 
 %package doc
-Summary:        Examples for python-tornado
+Summary:        Examples for %{name}
 Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
 Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
 
@@ -54,7 +54,7 @@ server and and tools. This package contains some example applications.
 
 %prep 
 %autosetup -p1 -n %{srcname}-%{version}
-# remove shebang from files
+# Remove shebang from files
 %{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
 
 %build
@@ -71,14 +71,18 @@ export ASYNC_TEST_TIMEOUT=10
 %license LICENSE
 %doc README.rst
 %{python3_sitearch}/%{srcname}/
-%{python3_sitearch}/%{srcname}-%{version}-*.egg-info
+%{python3_sitearch}/%{srcname}-*.egg-info/
 
 %files doc
+%license LICENSE
 %doc demos
 
 %changelog
+* Tue Nov 03 2020 Fabian Affolter <mail@fabian-affolter.ch> -6.1.0-1
+- Update to latest upstream release 6.1.0 (#1883858)
+
 * Sun Sep 13 2020 Fabian Affolter <mail@fabian-affolter.ch> - 6.0.4-1
-- Update to latest upstream release 6.0.3 (rhbz#1809858)
+- Update to latest upstream release 6.0.3 (#1809858)
 
 * Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 6.0.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
