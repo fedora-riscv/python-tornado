@@ -2,7 +2,7 @@
 
 Name:           python-%{srcname}
 Version:        6.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -78,6 +78,9 @@ export ASYNC_TEST_TIMEOUT=10
 %doc demos
 
 %changelog
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 6.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Tue Nov 03 2020 Fabian Affolter <mail@fabian-affolter.ch> -6.1.0-1
 - Update to latest upstream release 6.1.0 (#1883858)
 
