@@ -1,12 +1,21 @@
 %global srcname tornado
+%global common_description %{expand:
+Tornado is an open source version of the scalable, non-blocking web
+server and tools.
+
+The framework is distinct from most mainstream web server frameworks
+(and certainly most Python frameworks) because it is non-blocking and
+reasonably fast. Because it is non-blocking and uses epoll, it can
+handle thousands of simultaneous standing connections, which means it is
+ideal for real-time web services.}
 
 Name:           python-%{srcname}
 Version:        6.1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
-URL:            http://www.tornadoweb.org
+URL:            https://www.tornadoweb.org
 Source0:        https://github.com/tornadoweb/tornado/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
 # Do not turn DeprecationWarning in tornado module into Exception
@@ -14,70 +23,52 @@ Source0:        https://github.com/tornadoweb/tornado/archive/v%{version}/%{srcn
 Patch1:         Do-not-turn-DeprecationWarning-into-Exception.patch
 
 BuildRequires:  gcc
+BuildRequires:  python3-devel
 
-BuildRequires:  python%{python3_pkgversion}-setuptools
-BuildRequires:  python%{python3_pkgversion}-devel
+%description %{common_description}
 
-%description
-Tornado is an open source version of the scalable, non-blocking web
-server and tools.
+%package -n python3-%{srcname}
+Summary:        %{summary}
 
-The framework is distinct from most mainstream web server frameworks
-(and certainly most Python frameworks) because it is non-blocking and
-reasonably fast. Because it is non-blocking and uses epoll, it can
-handle thousands of simultaneous standing connections, which means it is
-ideal for real-time web services.
-
-%package -n python%{python3_pkgversion}-%{srcname}
-Summary:        Scalable, non-blocking web server and tools
-%{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
-Requires:       python%{python3_pkgversion}-pycurl
-
-%description -n python%{python3_pkgversion}-%{srcname}
-Tornado is an open source version of the scalable, non-blocking web
-server and tools.
-
-The framework is distinct from most mainstream web server frameworks
-(and certainly most Python frameworks) because it is non-blocking and
-reasonably fast. Because it is non-blocking and uses epoll, it can
-handle thousands of simultaneous standing connections, which means it is
-ideal for real-time web services.
+%description -n python3-%{srcname} %{common_description}
 
 %package doc
 Summary:        Examples for %{name}
-Obsoletes:      python%{python3_pkgversion}-%{srcname}-doc < 4.2.1-3
-Provides:       python%{python3_pkgversion}-%{srcname}-doc = %{version}-%{release}
 
-%description doc
-Tornado is an open source version of the scalable, non-blocking web
-server and and tools. This package contains some example applications.
+%description doc %{common_description}
 
-%prep 
+This package contains some example applications.
+
+%prep
 %autosetup -p1 -n %{srcname}-%{version}
-# Remove shebang from files
-%{__sed} -i.orig -e '/^#!\//, 1d' *py tornado/*.py tornado/*/*.py
+
+%generate_buildrequires
+%pyproject_buildrequires -e py3
 
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
+%pyproject_save_files %{srcname}
 
 %check
-export ASYNC_TEST_TIMEOUT=10
-%{__python3} -m tornado.test.runtests --verbose
+# Skip the same timing-related tests that upstream skips when run in Travis CI.
+# https://github.com/tornadoweb/tornado/commit/abc5780a06a1edd0177a399a4dd4f39497cb0c57
+export TRAVIS=true
+%tox
 
-%files -n python%{python3_pkgversion}-%{srcname}
-%license LICENSE
+%files -n python3-%{srcname} -f %{pyproject_files}
 %doc README.rst
-%{python3_sitearch}/%{srcname}/
-%{python3_sitearch}/%{srcname}-*.egg-info/
 
 %files doc
 %license LICENSE
 %doc demos
 
 %changelog
+* Tue Feb 08 2022 Carl George <carl@george.computer> - 6.1.0-6
+- Convert to pyproject macros
+
 * Fri Jan 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 6.1.0-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
