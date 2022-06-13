@@ -11,7 +11,7 @@ ideal for real-time web services.}
 
 Name:           python-%{srcname}
 Version:        6.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -66,6 +66,9 @@ export TRAVIS=true
 %doc demos
 
 %changelog
+* Mon Jun 13 2022 Python Maint <python-maint@redhat.com> - 6.1.0-7
+- Rebuilt for Python 3.11
+
 * Tue Feb 08 2022 Carl George <carl@george.computer> - 6.1.0-6
 - Convert to pyproject macros
 
