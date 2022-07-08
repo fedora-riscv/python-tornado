@@ -10,8 +10,8 @@ handle thousands of simultaneous standing connections, which means it is
 ideal for real-time web services.}
 
 Name:           python-%{srcname}
-Version:        6.1.0
-Release:        7%{?dist}
+Version:        6.2.0
+Release:        1%{?dist}
 Summary:        Scalable, non-blocking web server and tools
 
 License:        ASL 2.0
@@ -66,6 +66,9 @@ export TRAVIS=true
 %doc demos
 
 %changelog
+* Thu Jul 07 2022 Carl George <carl@george.computer> - 6.2.0-1
+- Latest upstream, resolves rhbz#1883858
+
 * Mon Jun 13 2022 Python Maint <python-maint@redhat.com> - 6.1.0-7
 - Rebuilt for Python 3.11
 
