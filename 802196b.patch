@@ -1,0 +1,33 @@
+From 802196bddbc83ed2723f819decc91f6628b65f2c Mon Sep 17 00:00:00 2001
+From: Ben Darnell <ben@bendarnell.com>
+Date: Sat, 26 Nov 2022 22:29:59 -0500
+Subject: [PATCH] test: Skip undecorated coroutine test in py312
+
+The standard library now has its own check for this, rendering ours redundant
+(and breaking our test)
+---
+ tornado/test/testing_test.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tornado/test/testing_test.py b/tornado/test/testing_test.py
+index d75079bd4a..ef47e97c2b 100644
+--- a/tornado/test/testing_test.py
++++ b/tornado/test/testing_test.py
+@@ -10,6 +10,7 @@
+ import gc
+ import os
+ import platform
++import sys
+ import traceback
+ import unittest
+ import warnings
+@@ -134,6 +135,9 @@ def test_gen(self):
+         platform.python_implementation() == "PyPy",
+         "pypy destructor warnings cannot be silenced",
+     )
++    @unittest.skipIf(
++        sys.version_info >= (3, 12), "py312 has its own check for test case returns"
++    )
+     def test_undecorated_coroutine(self):
+         class Test(AsyncTestCase):
+             async def test_coro(self):
